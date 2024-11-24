@@ -1,6 +1,7 @@
-from app import create_app
+from flask_cors import CORS
 
-app = create_app()
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+def create_app():
+    app = Flask(__name__)
+    CORS(app)  # Allow cross-origin requests from your React Native app
+    app.register_blueprint(api_bp, url_prefix='/api')
+    return app
