@@ -1,14 +1,6 @@
-from flask import Flask
+from app import create_app
 
-def create_app():
-    app = Flask(__name__)
+app = create_app()
 
-    # Register the API Blueprint with a prefix
-    app.register_blueprint(api_bp, url_prefix='/api')
-
-    # Add a root route
-    @app.route("/")
-    def home():
-        return "Backend is live!", 200
-
-    return app
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
