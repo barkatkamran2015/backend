@@ -1,16 +1,14 @@
 from flask import Flask
-from app.config import Config
+from app.blueprints.api import api_bp
 
 def create_app():
     app = Flask(__name__)
 
-    # Load configuration
-    app.config.from_object(Config)
-
-    # Register blueprints
-    from app.blueprints.api import api_bp
-    from app.blueprints.web import web_bp
-    app.register_blueprint(api_bp, url_prefix="/api")
-    app.register_blueprint(web_bp, url_prefix="/web")
+    # Register the API Blueprint with a prefix
+    app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000)
