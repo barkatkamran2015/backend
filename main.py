@@ -1,17 +1,16 @@
 from flask import Flask
+from app.config import Config
 
 def create_app():
     app = Flask(__name__)
 
-    # Adjust imports to reflect the module structure
-    from app.blueprints.api import api_bp
-    from app.blueprints.web import web_bp
+    # Load configuration
+    app.config.from_object(Config)
 
     # Register blueprints
+    from app.blueprints.api import api_bp
+    from app.blueprints.web import web_bp
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(web_bp, url_prefix="/web")
-
-    # Additional configuration
-    app.config.from_object("app.config.Config")
 
     return app
