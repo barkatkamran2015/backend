@@ -9,8 +9,10 @@ api_bp = Blueprint("api", __name__)
 
 @api_bp.route("/process-receipt", methods=['POST'])
 def process_receipt():
-    # Get the uploaded file from the request
-    file = request.files['file']
+    print("Request received at /api/process-receipt")  # Log route hit
+    print("Headers:", request.headers)  # Log request headers
+    print("Form data:", request.form)  # Log form data
+    print("Files:", request.files)  # Log uploaded files
 
     # Get categories from the request form data and parse it as a list
     categories = json.loads(request.form.get('categories', '[]'))
