@@ -1,6 +1,17 @@
-from app import create_app
+from flask import Flask
 
-app = create_app()
+def create_app():
+    app = Flask(__name__)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Adjust imports to reflect the module structure
+    from app.blueprints.api import api_bp
+    from app.blueprints.web import web_bp
+
+    # Register blueprints
+    app.register_blueprint(api_bp, url_prefix="/api")
+    app.register_blueprint(web_bp, url_prefix="/web")
+
+    # Additional configuration
+    app.config.from_object("app.config.Config")
+
+    return app
