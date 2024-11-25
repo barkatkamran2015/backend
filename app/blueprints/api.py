@@ -10,44 +10,51 @@ api_bp = Blueprint("api", __name__)
 @api_bp.route('/api/process-receipt', methods=['POST'])
 def process_receipt():
     try:
-        file = request.files['file']
+        file = request.files.get('file')
+        if not file:
+            return jsonify({'error': 'File missing from the request'}), 400
+
         categories = json.loads(request.form.get('categories', '[]'))
 
-        files = {
-            'file': (file.filename, file, file.content_type)
-        }
         headers = {
             'Accept': 'application/json',
             'Client-Id': veryfi_config['client_id'],
             'Authorization': f"apikey {veryfi_config['username']}:{veryfi_config['api_key']}"
         }
-
+        files = {'file': (file.filename, file, file.content_type)}
         response = requests.post(veryfi_config['api_url'], headers=headers, files=files)
-        response.raise_for_status()  # Raises an HTTPError for bad responses
+        response.raise_for_status()
+        
         vf_data = response.json()
 
-        date = vf_data.get('date', '')
-        try:
-            vf_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d") if date else "N/A"
-        except ValueError:
-            vf_date = "N/A"
+        # Process and validate receipt data...
+        receipt_data = process_receipt_data(vf_data, categories)
+        return jsonify(receipt_data), 200
 
-        vf_items = [item['description'] for item in vf_data.get('line_items', [])]
-        vendor = vf_data.get('vendor', {}).get('name', "Unknown Vendor")
-        category = get_category(vendor, ", ".join(categories))
+    except requests.RequestException as e:
+        app.logger.error(f"Request failed: {e}")
+        return jsonify({'error': 'Error processing receipt', 'message': str(e)}), 502
+    except Exception as e:
+        app.logger.error(f"Unhandled exception: {e}")
+        return jsonify({'error': 'Internal server error', 'message': str(e)}), 500
 
-        logo_url = get_logo_url(vendor)
+def process_receipt_data(vf_data, categories):
+    date = vf_data.get('date', '')
+    vf_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d") if date else "N/A"
+    vf_items = [item['description'] for item in vf_data.get('line_items', [])]
+    vendor = vf_data.get('vendor', {}).get('name', "Unknown Vendor")
+    category = get_category(vendor, ", ".join(categories))
+    logo_url = get_logo_url(vendor)
 
-        receipt_data = {
-            'id': vf_data.get('id', 'N/A'),
-            'vendor': vendor,
-            'total': vf_data.get('total', 0.0),
-            'category': category,
-            'date': vf_date,
-            'items': vf_items,
-            'logoUrl': logo_url
-        }
-
+    return {
+        'id': vf_data.get('id', 'N/A'),
+        'vendor': vendor,
+        'total': vf_data.get('total', 0.0),
+        'category': category,
+        'date': vf_date,
+        'items': vf_items,
+        'logoUrl': logo_url
+    }
         return jsonify(receipt_data), 200
     except requests.RequestException as e:
         return jsonify({'error': 'Error processing receipt', 'message': str(e)}), 502
