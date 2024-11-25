@@ -1,3 +1,4 @@
+# main.py
 from flask import Flask
 from flask_cors import CORS
 from app.blueprints.api import api_bp
