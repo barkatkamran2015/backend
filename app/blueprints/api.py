@@ -7,10 +7,9 @@ from ..categorizer import get_category
 
 api_bp = Blueprint("api", __name__)
 
-@api_bp.route("/process-receipt", methods=['POST'])
+@api_bp.route('/process-receipt', methods=['POST'])
 def process_receipt():
-    # Get the uploaded file from the request
-    file = request.files['file']
+    return "Receipt processed"
 
     # Get categories from the request form data and parse it as a list
     categories = json.loads(request.form.get('categories', '[]'))
