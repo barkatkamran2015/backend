@@ -1,10 +1,13 @@
-from flask import Flask
-from app.blueprints.api import api_bp  # Ensure this import path is correct
+from flask import Flask, jsonify
 
 def create_app():
     app = Flask(__name__)
-    # Configure your app here, like setting up configurations, databases, registering blueprints, etc.
-    app.register_blueprint(api_bp, url_prefix='/api')
+    
+    @app.route('/', methods=['GET'])
+    def home():
+        return jsonify({'message': 'API is live and operational'}), 200
+
+    # Additional configurations and routes
     return app
 
-app = create_app()  # This line is crucial, it creates the 'app' object
+app = create_app()
