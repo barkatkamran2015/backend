@@ -1,15 +1,15 @@
-from flask import Flask
-from app.blueprints.api import api_bp  # Import the blueprint
+from flask import Flask, jsonify
+from app.blueprints.api import api_bp
 
 def create_app():
     app = Flask(__name__)
-    
-    # Health check route (optional but useful for Render's health checks)
+
+    # Health check route
     @app.route('/', methods=['GET', 'POST'])
     def home():
         return jsonify({'message': 'API is live and operational'}), 200
 
-    # Register blueprints
+    # Register the API blueprint
     app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
