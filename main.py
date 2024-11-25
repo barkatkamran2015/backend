@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from yourapp.blueprints.api import api_bp
+from app.blueprints.api import api_bp
 
 def create_app():
     app = Flask(__name__)
