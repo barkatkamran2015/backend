@@ -1,14 +1,10 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
-from app.blueprints.api import api_bp
+from flask import Flask
+from app.blueprints.api import api_bp  # Ensure this import path is correct
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    # Configure your app here, like setting up configurations, databases, registering blueprints, etc.
     app.register_blueprint(api_bp, url_prefix='/api')
-
-    @app.route('/', methods=['GET'])
-    def index():
-        return jsonify({'message': 'API is running'}), 200
-
     return app
+
+app = create_app()  # This line is crucial, it creates the 'app' object
