@@ -7,7 +7,7 @@ from ..categorizer import get_category
 
 api_bp = Blueprint("api", __name__)
 
-@api_bp.route('/process-receipt', methods=['POST'])
+@api_bp.route('api/process-receipt', methods=['POST'])
 def process_receipt():
     return "Receipt processed"
 
