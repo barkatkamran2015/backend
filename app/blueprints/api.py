@@ -7,10 +7,23 @@ from ..categorizer import get_category
 
 api_bp = Blueprint("api", __name__)
 
-@api_bp.route("/process-receipt", methods=['POST'])
+@api_bp.route('/api/process-receipt', methods=['POST'])
 def process_receipt():
-    # Get the uploaded file from the request
+    if 'file' not in request.files:
+        return {"message": "No file uploaded"}, 400
+
     file = request.files['file']
+    if file.filename == '':
+        return {"message": "No selected file"}, 400
+
+    # Process the file (e.g., send to Veryfi or OpenAI API)
+    try:
+        # Example: Integrate with receipt processing API
+        response = process_receipt_file(file)  # Replace with actual processing logic
+        return {"message": "Receipt processed", "data": response}, 200
+    except Exception as e:
+        return {"message": "Error processing receipt", "error": str(e)}, 500
+
 
     # Get categories from the request form data and parse it as a list
     categories = json.loads(request.form.get('categories', '[]'))
